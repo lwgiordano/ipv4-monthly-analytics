@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: A single-page, vertical-scrolling infographic. The structure flows from a high-level summary (KPI cards) to campaign-level analysis (charts for budget/performance), then to creative-level insights (top assets chart, image analysis grid), and finally concludes with actionable recommendations. This top-down approach makes the complex data digestible by starting broad and progressively adding detail. The image asset analysis uses a visual grid to directly showcase the qualitative findings. This structure was chosen for narrative clarity and ease of use over mirroring the report's exact sections. -->
+    <!-- Visualization & Content Choices: KPI Cards (Goal: Inform) for key stats. Doughnut Chart (Goal: Compare) for budget allocation. Bar Charts (Goal: Compare) for campaign performance and top performers. Grid of Cards (Goal: Organize/Inform) for image analysis and recommendations. All charts use Chart.js on Canvas, adhering to the NO SVG/Mermaid rule. This mix of visualizations and structured text provides a comprehensive and engaging narrative of the report's findings. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPv4.Global - May 2025 Performance Infographic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+        }
+        .kpi-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #0044cc;
+        }
+        .kpi-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+        .section-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .section-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+        }
+        .image-asset-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .image-asset {
+            max-width: 150px;
+            height: auto;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-[#0044cc] tracking-tight">IPv4.Global Digital Marketing Performance</h1>
+            <p class="mt-4 text-xl text-gray-600">Deep Dive Analysis: May 2025</p>
+        </header>
+
+        <section id="overview" class="mb-12">
+            <div class="section-card">
+                <h2 class="section-title">May 2025 at a Glance</h2>
+                <p class="section-subtitle">A high-level overview of the total investment and return across all Google Ads campaigns for the month, with conversions now representing 'Confirmed Registrations'.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="kpi-card">
+                        <p class="kpi-value">$42.8k</p>
+                        <p class="kpi-label">Total Ad Spend</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-value">6.67M</p>
+                        <p class="kpi-label">Total Impressions</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-value">137.3k</p>
+                        <p class="kpi-label">Total Clicks</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-value">47</p>
+                        <p class="kpi-label">Confirmed Registrations</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="campaign-performance" class="mb-12">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-2 section-card">
+                    <h3 class="font-bold text-2xl mb-2 text-gray-800">Campaign Budget Allocation</h3>
+                    <p class="text-gray-600 mb-4">Search campaigns consumed the majority of the ad spend, reflecting a strategy focused on capturing high-intent users actively looking for IPv4 solutions. Demand Gen followed, aimed at building broader awareness.</p>
+                    <div class="chart-container h-80">
+                        <canvas id="costByCampaignTypeChart"></canvas>
+                    </div>
+                </div>
+                <div class="lg:col-span-3 section-card">
+                    <h3 class="font-bold text-2xl mb-2 text-gray-800">Performance by Campaign Type</h3>
+                    <p class="text-gray-600 mb-4">While Search campaigns drove the most clicks and the majority of 'Confirmed Registrations', Display and Demand Gen campaigns were instrumental in generating massive impression volume for top-of-funnel brand visibility. </p>
+                    <div class="chart-container h-80">
+                        <canvas id="performanceByCampaignTypeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="top-performers" class="mb-12">
+            <div class="section-card">
+                <h2 class="section-title">Top Performing Campaigns</h2>
+                <p class="section-subtitle">Identifying the campaigns that delivered the most value in terms of 'Confirmed Registrations' and clicks is key to optimizing future ad spend.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="font-semibold text-xl text-gray-800 mb-2">Top Search Campaigns by Confirmed Registrations</h3>
+                        <p class="text-gray-600 mb-4">The 'INTL_Prospect_IPv4_Search_Phrase' campaign led in confirmed registrations. Other international and US search campaigns also contributed, highlighting the importance of targeted search efforts.</p>
+                        <div class="chart-container h-96">
+                            <canvas id="topSearchCampaignsChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-xl text-gray-800 mb-2">Top Display & Demand Gen Campaigns by Clicks</h3>
+                        <p class="text-gray-600 mb-4">The 'All_Discovery_Buy_Dec2024' campaign successfully generated the most clicks, demonstrating its effectiveness in capturing user attention. Geo-fencing campaigns also performed well in driving targeted traffic.</p>
+                        <div class="chart-container h-96">
+                            <canvas id="topDisplayCampaignsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="asset-performance" class="mb-12">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                 <div class="section-card h-full">
+                    <h3 class="font-bold text-2xl mb-2 text-gray-800">Most Valuable Ad Creatives (by Conversion Value)</h3>
+                    <p class="text-gray-600 mb-4">While direct 'Confirmed Registration' data per asset is unavailable, these creatives generated the highest overall conversion value, indicating their effectiveness in driving desired user actions. They often feature clear, benefit-oriented language and strong brand visuals.</p>
+                     <div class="chart-container">
+                        <canvas id="topAssetsChart"></canvas>
+                    </div>
+                </div>
+                <div class="section-card h-full">
+                    <h3 class="font-bold text-2xl mb-2 text-gray-800">Key Creative Insights for Conversions</h3>
+                    <ul class="space-y-4 text-gray-600">
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-4 text-[#0055ff]">🎯</span>
+                            <div>
+                                <h4 class="font-semibold text-lg text-gray-700">Direct Language & Problem-Solving Wins</h4>
+                                <p>Creatives with clear value propositions (e.g., "buy-lease comparison," "Pay Now or Later") and those addressing strategic needs ("Cashflow Analysis") effectively pre-qualify users, leading to higher quality clicks and contributing to conversions.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-4 text-[#0055ff]">🖼️</span>
+                            <div>
+                                <h4 class="font-semibold text-lg text-gray-700">High Clicks, Low Conversion Value: A Mismatch</h4>
+                                <p>Some image assets generated many clicks but zero conversion value. This suggests a disconnect where the visual appeal attracts broad traffic, but the ad's message or the landing page experience fails to convert these users into confirmed registrations. Optimization is needed to align creative with conversion intent.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-4 text-[#0055ff]">💡</span>
+                             <div>
+                                <h4 class="font-semibold text-lg text-gray-700">Ad Strength Directly Impacts Visibility & Conversions</h4>
+                                <p>Google's "Ad strength improvements" are critical. Campaigns with "Poor" or "Average" ad strength lost significant impression share due to Ad Rank, meaning they were outranked. Improving ad relevance by incorporating more keywords and unique headlines is a direct path to better visibility and potential confirmed registrations.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="image-asset-analysis" class="mb-12">
+            <div class="section-card">
+                <h2 class="section-title">Deep Dive: Image Asset Performance</h2>
+                <p class="section-subtitle">A qualitative analysis of specific image creatives and their effectiveness in driving clicks and contributing to conversions (via "All conv. value").</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Image 1 -->
+                    <div class="flex flex-col items-center p-4 border border-gray-200 rounded-lg shadow-sm">
+                        <div class="image-asset-container">
+                            <img src="https://tpc.googlesyndication.com/simgad/17570890645611739171" alt="IPv4.Global Logo" class="image-asset">
+                            <p class="text-sm text-gray-600">**Image 1 (Logo):** `17570890645611739171`</p>
+                        </div>
+                        <h4 class="font-semibold text-base text-gray-800 mt-2">Working: Trust & Brand Authority</h4>
+                        <p class="text-sm text-gray-700">This logo consistently delivers high conversion value (Total: 10.02). Its professionalism and clear branding build immediate trust. Users are more likely to click and convert when they recognize and trust the source, crucial for high-value IPv4 transactions.</p>
+                        <p class="text-xs text-gray-500 mt-2">Clicks: 22,707 | Avg. CTR: 1.89% | Conv. Value: 10.02</p>
+                    </div>
+
+                    <!-- Image 2 -->
+                    <div class="flex flex-col items-center p-4 border border-red-200 rounded-lg shadow-sm">
+                        <div class="image-asset-container">
+                            <img src="https://tpc.googlesyndication.com/simgad/17449373929369834150" alt="Generic Globe Image" class="image-asset">
+                            <p class="text-sm text-gray-600">**Image 2 (Square Globe):** `17449373929369834150`</p>
+                        </div>
+                        <h4 class="font-semibold text-base text-red-700 mt-2">Not Working: High Clicks, Zero Conversion</h4>
+                        <p class="text-sm text-gray-700">Despite a very high CTR (5.27%), this image yields 0.00 conversion value. It's visually appealing but too generic; it attracts broad curiosity, not qualified users seeking IPv4 services. This results in wasted ad spend on clicks that don't lead to confirmed registrations.</p>
+                        <p class="text-xs text-gray-500 mt-2">Clicks: 28,108 | Avg. CTR: 5.27% | Conv. Value: 0.00</p>
+                    </div>
+
+                    <!-- Image 3 -->
+                    <div class="flex flex-col items-center p-4 border border-green-200 rounded-lg shadow-sm">
+                        <div class="image-asset-container">
+                            <img src="https://tpc.googlesyndication.com/simgad/1453440000548323210" alt="Sell IPv4 Image" class="image-asset">
+                            <p class="text-sm text-gray-600">**Image 3 (Square: SELL IPv4):** `1453440000548323210`</p>
+                        </div>
+                        <h4 class="font-semibold text-base text-green-700 mt-2">Working: Direct Problem/Solution</h4>
+                        <p class="text-sm text-gray-700">This image directly addresses a specific user need ("Unused IPv4 addresses... SELL IPv4 LEARN HOW"). Its clear, action-oriented text qualifies clicks, attracting users with high intent to sell, contributing to conversions.</p>
+                        <p class="text-xs text-gray-500 mt-2">Clicks: 1,124 | Avg. CTR: 1.64% | Conv. Value: 1.00</p>
+                    </div>
+
+                    <!-- Image 4 -->
+                    <div class="flex flex-col items-center p-4 border border-green-200 rounded-lg shadow-sm">
+                        <div class="image-asset-container">
+                            <img src="https://tpc.googlesyndication.com/simgad/17078229570557724533" alt="Buy or Lease Compare Options" class="image-asset">
+                            <p class="text-sm text-gray-600">**Image 4 (Horizontal: Buy/Lease Compare):** `17078229570557724533`</p>
+                        </div>
+                        <h4 class="font-semibold text-base text-green-700 mt-2">Working: Addresses Key Decision Point</h4>
+                        <p class="text-sm text-gray-700">This image directly addresses the 'Buy or Lease' decision, a core query for potential clients. "COMPARE OPTIONS HERE" provides a clear path for users seeking information to make an informed choice, leading to conversions.</p>
+                        <p class="text-xs text-gray-500 mt-2">Clicks: 22,935 | Avg. CTR: 4.10% | Conv. Value: 1.00</p>
+                    </div>
+
+                    <!-- Image 5 -->
+                    <div class="flex flex-col items-center p-4 border border-green-200 rounded-lg shadow-sm">
+                        <div class="image-asset-container">
+                            <img src="https://tpc.googlesyndication.com/simgad/16978430755171963820" alt="Buy or Lease Search Global" class="image-asset">
+                            <p class="text-sm text-gray-600">**Image 5 (Horizontal: Buy/Lease Search):** `16978430755171963820`</p>
+                        </div>
+                        <h4 class="font-semibold text-base text-green-700 mt-2">Working: Action-Oriented & Relevant Visual</h4>
+                        <p class="text-sm text-gray-700">With a global network background and a clear "SEARCH IPv4.GLOBAL" call to action, this image effectively guides high-intent users. It combines visual relevance with a direct prompt, contributing significantly to conversions.</p>
+                        <p class="text-xs text-gray-500 mt-2">Clicks: 11,421 | Avg. CTR: 2.38% | Conv. Value: 4.00</p>
+                    </div>
+
+                    <!-- Image 6 -->
+                    <div class="flex flex-col items-center p-4 border border-gray-200 rounded-lg shadow-sm">
+                        <div class="image-asset-container">
+                            <img src="https://tpc.googlesyndication.com/simgad/7005208033978803156" alt="Additional Image Asset" class="image-asset">
+                            <p class="text-sm text-gray-600">**Image 6 (Additional Asset):** `7005208033978803156`</p>
+                        </div>
+                        <h4 class="font-semibold text-base text-gray-800 mt-2">Evaluation Pending: General Asset</h4>
+                        <p class="text-sm text-gray-700">This image was provided but its specific content or performance context for conversions is not detailed in the reports. Its effectiveness would depend on visual message, accompanying text, and campaign alignment.</p>
+                        <p class="text-xs text-gray-500 mt-2">Data not directly available for this specific image asset in reports.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="recommendations" class="mb-12">
+            <div class="section-card">
+                <h2 class="section-title">Strategic Recommendations</h2>
+                <p class="section-subtitle">Based on the May 2025 data, here are actionable steps to enhance performance and maximize return on investment.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="p-6 bg-blue-50 rounded-lg">
+                        <h4 class="font-bold text-lg text-[#0044cc] mb-2">1. Enhance Conversion Tracking</h4>
+                        <p class="text-gray-700">Refine conversion value tracking to accurately reflect the actual revenue. For high-cost search campaigns, this is essential to accurately calculate ROI and justify ad spend.</p>
+                    </div>
+                    <div class="p-6 bg-blue-50 rounded-lg">
+                        <h4 class="font-bold text-lg text-[#0044cc] mb-2">2. Optimize Ad Creative</h4>
+                        <p class="text-gray-700">Pause or redesign high-click, zero-confirmed-registration assets. Systematically implement Google's "Ad Strength" recommendations to improve relevance, Quality Score, and ad rank.</p>
+                    </div>
+                    <div class="p-6 bg-blue-50 rounded-lg">
+                        <h4 class="font-bold text-lg text-[#0044cc] mb-2">3. Fix and Improve Landing Pages</h4>
+                        <p class="text-gray-700">Immediately investigate and fix the technical issues on the `/leasing` page. Conduct a UX audit of low-engagement pages like `/buy-or-lease-landing/` to better align content with ad messaging.</p>
+                    </div>
+                     <div class="p-6 bg-blue-50 rounded-lg">
+                        <h4 class="font-bold text-lg text-[#0044cc] mb-2">4. Re-evaluate Automated Campaigns</h4>
+                        <p class="text-gray-700">Analyze why Performance Max and Smart campaigns were paused. Consider reactivating them with optimized settings to leverage Google's automation for broader reach and efficiency.</p>
+                    </div>
+                     <div class="p-6 bg-blue-50 rounded-lg">
+                        <h4 class="font-bold text-lg text-[#0044cc] mb-2">5. Focus on High-Intent Keywords</h4>
+                        <p class="text-gray-700">Continue to invest in high-performing international search campaigns, like those targeting "IPv4 lease", as they attract highly qualified and valuable users, even with a higher CPC.</p>
+                    </div>
+                     <div class="p-6 bg-blue-50 rounded-lg">
+                        <h4 class="font-bold text-lg text-[#0044cc] mb-2">6. Implement Micro-Conversions</h4>
+                        <p class="text-gray-700">For Display & Demand Gen, track upper-funnel actions (e.g., content downloads, video views) to better measure their contribution to the customer journey beyond direct sales.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center p-8 text-gray-500">
+        <p>&copy; 2025 IPv4.Global | Digital Marketing Performance Report. This infographic was generated based on May 2025 Google Ads and Google Analytics data.</p>
+    </footer>
+
+    <script>
+        const brilliantBlues = ['#0044cc', '#0055ff', '#3377ff', '#6699ff', '#99bbff'];
+
+        function wrapLabels(label, maxWidth) {
+            if (typeof label !== 'string' || label.length <= maxWidth) {
+                return label;
+            }
+            const words = label.split(' ');
+            let lines = [];
+            let currentLine = '';
+            words.forEach(word => {
+                if ((currentLine + ' ' + word).trim().length > maxWidth) {
+                    lines.push(currentLine.trim());
+                    currentLine = word;
+                } else {
+                    currentLine = (currentLine + ' ' + word).trim();
+                }
+            });
+            if (currentLine) {
+                lines.push(currentLine.trim());
+            }
+            return lines;
+        }
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+        
+        const commonChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            family: 'Inter',
+                            size: 12
+                        },
+                        color: '#4b5563'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    },
+                    backgroundColor: '#111827',
+                    titleFont: { family: 'Inter', size: 14, weight: 'bold' },
+                    bodyFont: { family: 'Inter', size: 12 },
+                    padding: 12,
+                    cornerRadius: 6
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        font: { family: 'Inter', size: 12 },
+                        color: '#4b5563'
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    ticks: {
+                        font: { family: 'Inter', size: 12 },
+                        color: '#4b5563'
+                    },
+                    grid: {
+                        color: '#e5e7eb'
+                    }
+                }
+            }
+        };
+
+        const costByCampaignTypeData = {
+            labels: ['Search', 'Display', 'Demand Gen'],
+            datasets: [{
+                label: 'Cost',
+                data: [21576.54, 4097.99, 17131.09],
+                backgroundColor: brilliantBlues.slice(0, 3),
+                borderColor: '#ffffff',
+                borderWidth: 2
+            }]
+        };
+        new Chart(document.getElementById('costByCampaignTypeChart'), {
+            type: 'doughnut',
+            data: costByCampaignTypeData,
+            options: {
+                ...commonChartOptions,
+                cutout: '70%',
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        });
+
+        const performanceByCampaignTypeData = {
+            labels: ['Search', 'Display', 'Demand Gen'],
+            datasets: [
+                {
+                    label: 'Clicks',
+                    data: [73439, 15229, 48655],
+                    backgroundColor: brilliantBlues[1],
+                },
+                {
+                    label: 'Confirmed Registrations',
+                    data: [27, 0, 20],
+                    backgroundColor: brilliantBlues[0],
+                }
+            ]
+        };
+        new Chart(document.getElementById('performanceByCampaignTypeChart'), {
+            type: 'bar',
+            data: performanceByCampaignTypeData,
+            options: { ...commonChartOptions }
+        });
+
+        const topSearchCampaignsData = {
+            labels: [
+                wrapLabels('INTL_Prospect_IPv4_Search_Phrase', 16),
+                wrapLabels('INTL_Prospect_IP_Search_Broad', 16),
+                wrapLabels('INTL_Prospect_IPv4_Search_Broad', 16),
+                wrapLabels('INTL_Prospect_IP_Search_Exact', 16),
+                wrapLabels('INTL_Prospect_IPv4_Search_Exact', 16),
+                wrapLabels('US_Brand_General_Search_Exact', 16),
+                wrapLabels('US_Prospect_IPv4_Search_Broad', 16),
+                wrapLabels('US_Prospect_IPv4_Search_Exact', 16)
+            ],
+            datasets: [{
+                label: 'Confirmed Registrations',
+                data: [9, 6, 5, 2, 2, 1, 1, 1],
+                backgroundColor: brilliantBlues[0],
+                borderColor: brilliantBlues[0],
+                borderWidth: 1
+            }]
+        };
+         new Chart(document.getElementById('topSearchCampaignsChart'), {
+            type: 'bar',
+            data: topSearchCampaignsData,
+            options: {
+                ...commonChartOptions,
+                indexAxis: 'y',
+                scales: { y: { grid: { display: false } } }
+            }
+        });
+
+        const topDisplayCampaignsData = {
+            labels: [
+                wrapLabels('All_Discovery_Buy_Dec2024', 20),
+                wrapLabels('US_Display_GeoFencing_CIO_Sloan_0519-0520_350', 20),
+                wrapLabels('US_Display_GeoFencing_RedHat_0518-0522_500', 20),
+                wrapLabels('US_Discovery_Lessee_Dec2024', 20),
+                wrapLabels('US_Discovery_Sell_Dec2024', 20)
+            ],
+            datasets: [{
+                label: 'Clicks',
+                data: [2962, 1003, 637, 100, 89],
+                backgroundColor: brilliantBlues[1],
+                 borderColor: brilliantBlues[1],
+                borderWidth: 1
+            }]
+        };
+        new Chart(document.getElementById('topDisplayCampaignsChart'), {
+            type: 'bar',
+            data: topDisplayCampaignsData,
+             options: {
+                ...commonChartOptions,
+                indexAxis: 'y',
+                 scales: { y: { grid: { display: false } } }
+            }
+        });
+        
+        const topAssetsData = {
+            labels: [
+                wrapLabels('Desc: Visit our buy-lease comparison page...', 25),
+                wrapLabels('Logo: .../1030469062935815621', 25),
+                wrapLabels('Headline: IPv4 Addresses: Pay Now or Later', 25),
+                wrapLabels('Headline: IPv4 Opportunities Marketplace', 25),
+                wrapLabels('Headline: IPv4 Address Cashflow Analysis', 25)
+            ],
+            datasets: [{
+                label: 'All Conversion Value',
+                data: [14.00, 10.02, 6.05, 5.00, 4.94],
+                backgroundColor: brilliantBlues,
+            }]
+        };
+        new Chart(document.getElementById('topAssetsChart'), {
+            type: 'bar',
+            data: topAssetsData,
+            options: {
+                ...commonChartOptions,
+                indexAxis: 'y',
+                scales: { y: { grid: { display: false } } }
+            }
+        });
+
+        const topEngagedPagesData = {
+            labels: [
+                wrapLabels('auctions.ipv4.global/intake', 25),
+                wrapLabels('auctions.ipv4.global/auth/sign-up', 25),
+                wrapLabels('auctions.ipv4.global/prior-sales', 25),
+                wrapLabels('auctions.ipv4.global/', 25),
+                wrapLabels('auctions.ipv4.global/leasing/en/leasing-hub', 25)
+            ],
+            datasets: [{
+                label: 'Average Engagement Time (seconds)',
+                data: [100.88, 55.16, 34.20, 33.88, 27.39],
+                backgroundColor: brilliantBlues,
+            }]
+        };
+         new Chart(document.getElementById('topEngagedPagesChart'), {
+            type: 'bar',
+            data: topEngagedPagesData,
+            options: {
+                ...commonChartOptions,
+                indexAxis: 'y',
+                scales: { y: { grid: { display: false } } }
+            }
+        });
+    </script>
+
+</body>
+</html>
